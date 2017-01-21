@@ -1,0 +1,17 @@
+group 'br.com.brjdevs'
+version '0.1'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:3.0.BETA2_121'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.reflections:reflections:0.9.10'
+}
