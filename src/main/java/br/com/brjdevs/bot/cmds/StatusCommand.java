@@ -8,24 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StatusCommand implements ICommand {
-    @Override
-    public void execute(CommandEvent event, String args) {
-        event.reply(BRjDevsBot.getSession().toEmbed(event)).queue();
-    }
-    @Override
-    public boolean isAdminCommand() {
-        return false;
-    }
-    @Override
-    public String getDescription() {
-        return "Mostra os meus status!";
-    }
-    @Override
-    public String getExample() {
-        return null;
-    }
-    @Override
-    public List<String> getAliases() {
-        return Arrays.asList("stats", "status");
-    }
+	@Override
+	public void execute(CommandEvent event, String args) {
+		event.reply(BRjDevsBot.getSession().toEmbed(event)).queue();
+	}
+
+	@Override
+	public List<String> getAliases() {
+		return Arrays.asList("stats", "status");
+	}
+
+	@Override
+	public String getDescription() {
+		return "Mostra os meus status!";
+	}
+
+	@Override
+	public String getExample() {
+		return null;
+	}
+
+	@Override
+	public boolean isAdminCommand() {
+		return false;
+	}
 }

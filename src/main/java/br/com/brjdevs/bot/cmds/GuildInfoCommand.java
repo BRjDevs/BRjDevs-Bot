@@ -14,37 +14,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GuildInfoCommand implements ICommand {
-    @Override
-    public void execute(CommandEvent event, String args) {
-        Guild guild = BRjDevsBot.getGuild();
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setThumbnail(guild.getIconUrl());
-        embedBuilder.setAuthor(guild.getName(), null, guild.getIconUrl());
-        embedBuilder.addField("Owner", Utils.getUser(guild.getOwner().getUser()), true);
-        embedBuilder.addField("Admins", String.join("\n", BRjDevsBot.getAdmins().stream().map(member -> Utils.getUser(member.getUser())).collect(Collectors.toList())), true);
-        List<Member> online = guild.getMembers().stream().filter(member -> member.getOnlineStatus() == OnlineStatus.ONLINE).collect(Collectors.toList());
-        embedBuilder.addField("Members (TOTAL/ONLINE)", guild.getMembers().size() + "/" + online.size(), true);
-        embedBuilder.addField("Roles", guild.getRoles().size() + "", true);
-        embedBuilder.addField("Text Channels", guild.getTextChannels().size() + "", true);
-        embedBuilder.addField("Voice Channels", guild.getVoiceChannels().size() + "", true);
-        embedBuilder.setColor(guild.getSelfMember().getColor());
+	@Override
+	public void execute(CommandEvent event, String args) {
+		Guild guild = BRjDevsBot.getGuild();
+		EmbedBuilder embedBuilder = new EmbedBuilder();
+		embedBuilder.setThumbnail(guild.getIconUrl());
+		embedBuilder.setAuthor(guild.getName(), null, guild.getIconUrl());
+		embedBuilder.addField("Owner", Utils.getUser(guild.getOwner().getUser()), true);
+		embedBuilder.addField("Admins", String.join("\n", BRjDevsBot.getAdmins().stream().map(member -> Utils.getUser(member.getUser())).collect(Collectors.toList())), true);
+		List<Member> online = guild.getMembers().stream().filter(member -> member.getOnlineStatus() == OnlineStatus.ONLINE).collect(Collectors.toList());
+		embedBuilder.addField("Members (TOTAL/ONLINE)", guild.getMembers().size() + "/" + online.size(), true);
+		embedBuilder.addField("Roles", guild.getRoles().size() + "", true);
+		embedBuilder.addField("Text Channels", guild.getTextChannels().size() + "", true);
+		embedBuilder.addField("Voice Channels", guild.getVoiceChannels().size() + "", true);
+		embedBuilder.setColor(guild.getSelfMember().getColor());
 
-        event.reply(embedBuilder.build()).queue();
-    }
-    @Override
-    public boolean isAdminCommand() {
-        return false;
-    }
-    @Override
-    public String getDescription() {
-        return "Da informação sobre a Guild!";
-    }
-    @Override
-    public String getExample() {
-        return null;
-    }
-    @Override
-    public List<String> getAliases() {
-        return Arrays.asList("guild", "guildinfo");
-    }
+		event.reply(embedBuilder.build()).queue();
+	}
+
+	@Override
+	public List<String> getAliases() {
+		return Arrays.asList("guild", "guildinfo");
+	}
+
+	@Override
+	public String getDescription() {
+		return "Da informação sobre a Guild!";
+	}
+
+	@Override
+	public String getExample() {
+		return null;
+	}
+
+	@Override
+	public boolean isAdminCommand() {
+		return false;
+	}
 }

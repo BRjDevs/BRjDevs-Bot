@@ -9,72 +9,72 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class TempBanManager {
-    private final Map<String, Long> UNBANS;
-    private boolean unbansUpdated = false;
-    public TempBanManager() {
-        this(new HashMap<>());
-    }
+	private final Map<String, Long> UNBANS;
+	private boolean unbansUpdated = false;
 
-    public TempBanManager(Map<String,Long> unbans) {
-        UNBANS = Collections.synchronizedMap(unbans);
+	public TempBanManager() {
+		this(new HashMap<>());
+	}
 
-        Thread thread = new Thread(this::threadcode, "Tempbans Thread");
-        thread.setDaemon(true);
-        thread.start();
-    }
+	public TempBanManager(Map<String, Long> unbans) {
+		UNBANS = Collections.synchronizedMap(unbans);
 
-    public void addTempban(String id, Long milis) {
-        BRjDevsBot.getDataManager().getData().get("tempbans").getAsJsonObject().addProperty(id, milis);
-        UNBANS.put(id, milis);
-        unbansUpdated = true;
-        synchronized (this) {
-            notify();
-        }
-    }
+		Thread thread = new Thread(this::threadcode, "Tempbans Thread");
+		thread.setDaemon(true);
+		thread.start();
+	}
 
-    public void removeTempban(String id) {
-        if (UNBANS.containsKey(id)) {
-            UNBANS.remove(id);
-            unbansUpdated = true;
-            synchronized (this) {
-                notify();
-            }
-        }
-    }
+	public void addTempban(String id, Long milis) {
+		UNBANS.put(id, milis);
+		unbansUpdated = true;
+		synchronized (this) {
+			notify();
+		}
+	}
 
-    private void threadcode() {
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            if (UNBANS.isEmpty()) {
-                try {
-                    synchronized (this) {
-                        wait();
-                        unbansUpdated = false;
-                    }
-                } catch (InterruptedException ignored) {
-                }
-            }
+	public void removeTempban(String id) {
+		if (UNBANS.containsKey(id)) {
+			UNBANS.remove(id);
+			unbansUpdated = true;
+			synchronized (this) {
+				notify();
+			}
+		}
+	}
 
-            //noinspection OptionalGetWithoutIsPresent
-            Entry<String, Long> unbanFirstEntry = UNBANS.entrySet().stream().sorted(Comparator.comparingLong(Entry::getValue)).findFirst().get();
+	private void threadcode() {
+		//noinspection InfiniteLoopStatement
+		while (true) {
+			if (UNBANS.isEmpty()) {
+				try {
+					synchronized (this) {
+						wait();
+						unbansUpdated = false;
+					}
+				} catch (InterruptedException ignored) {
+				}
+			}
 
-            try {
-                long timeout = unbanFirstEntry.getValue() - System.currentTimeMillis();
-                if (timeout > 0) {
-                    synchronized (this) {
-                        wait(timeout);
-                    }
-                }
-            } catch (InterruptedException ignored) {
-            }
+			//noinspection OptionalGetWithoutIsPresent
+			Entry<String, Long> unbanFirstEntry = UNBANS.entrySet().stream().sorted(Comparator.comparingLong(Entry::getValue)).findFirst().get();
 
-            if (!unbansUpdated) {
-                UNBANS.remove(unbanFirstEntry.getKey());
-                BRjDevsBot.getGuild().getController().unban(unbanFirstEntry.getKey());
-                BRjDevsBot.getDataManager().getData().get("tempbans").getAsJsonObject().remove(unbanFirstEntry.getKey());
-                ModLog.logunBan(BRjDevsBot.getGuild().getSelfMember(), unbanFirstEntry.getKey(), "The temporary ban ended.");
-                BRjDevsBot.getDataManager().update();
-            } else unbansUpdated = false; //and the loop will restart and resolve it
-        }
-    }
+			try {
+				long timeout = unbanFirstEntry.getValue() - System.currentTimeMillis();
+				if (timeout > 0) {
+					synchronized (this) {
+						wait(timeout);
+					}
+				}
+			} catch (InterruptedException ignored) {
+			}
+
+			if (!unbansUpdated) {
+				UNBANS.remove(unbanFirstEntry.getKey());
+				BRjDevsBot.getGuild().getController().unban(unbanFirstEntry.getKey()).queue();
+				UNBANS.remove(unbanFirstEntry.getKey());
+				ModLog.logUnban(BRjDevsBot.getGuild().getSelfMember(), unbanFirstEntry.getKey(), "The temporary ban ended.");
+				BRjDevsBot.getDataManager().update();
+			} else unbansUpdated = false; //and the loop will restart and resolve it
+		}
+	}
 }

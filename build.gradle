@@ -1,17 +1,30 @@
-group 'br.com.brjdevs'
-version '0.1'
+plugins {
+    id 'java'
+    id 'application'
+    id'com.github.johnrengelman.shadow' version '1.2.4'
+	id 'com.sedmelluq.jdaction' version '1.0.1'
+}
 
-apply plugin: 'java'
+mainClassName = "br.com.brjdevs.bot.BRjDevsBot"
+
+group 'br.com.brjdevs'
+version '1.0'
 
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+	mavenCentral()
     jcenter()
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.0.BETA2_121'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.reflections:reflections:0.9.10'
+    compile 'net.dv8tion:JDA:3.0.BETA2_122'
+	compile 'com.google.code.gson:gson:2.8.0'
+	compile 'org.reflections:reflections:0.9.10'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.2'
 }
