@@ -28,3 +28,7 @@ compileJava.options.encoding = 'UTF-8'
 task wrapper(type: Wrapper) {
 	gradleVersion = '3.2'
 }
+
+artifacts {
+	archives shadowJar
+}
