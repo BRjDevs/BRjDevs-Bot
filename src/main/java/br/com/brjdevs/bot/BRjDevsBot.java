@@ -82,7 +82,6 @@ public class BRjDevsBot {
 		if (jda.getGuilds().size() != 1) {
 			LOG.fatal("WTF I'M ON TWO GUILDS?\n" + jda.getGuilds());
 			jda.getGuilds().stream().filter(g -> !g.getId().equals("178878447614033921")).forEach(Guild::leave);
-			//System.exit(0); nopanic we can handle this
 		}
 	}
 

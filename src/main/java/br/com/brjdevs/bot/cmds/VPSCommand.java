@@ -13,21 +13,22 @@ import java.util.List;
 public class VPSCommand implements ICommand {
 
 	private final int mb = 1024 * 1024;
-	private OperatingSystemMXBean os = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+	private OperatingSystemMXBean os = (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
 
 	@Override
 	public void execute(CommandEvent event, String args) {
-		double cpu = Math.floor(os.getSystemCpuLoad() * 10000) / 100;
-		long totalDiskSize = new File("/").getTotalSpace();
-		long usableDiskSize = new File("/").getUsableSpace();
+		double cpu = os.getSystemCpuLoad() * 100;
+		long totalDiskSize = new File("/").getTotalSpace() /mb;
+		long usableDiskSize = new File("/").getUsableSpace() /mb;
 		long totalRam = os.getTotalPhysicalMemorySize() / mb;
 		long freeRam = os.getFreePhysicalMemorySize() / mb;
+		long usedRam = totalRam - freeRam;
 
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setTitle("VPS Stats");
-		embedBuilder.addField("CPU Usage", cpu + "%", true);
-		embedBuilder.addField("Disk size (USABLE/TOTAL)", usableDiskSize + "/" + totalDiskSize, true);
-		embedBuilder.addField("RAM (TOTAL/FREE/USING)", totalRam + "MB/" + freeRam + "MB/" + (totalRam - freeRam) + "MB", true);
+		embedBuilder.addField("CPU Usage", String.format("%.2f", cpu) + "%", true);
+		embedBuilder.addField("Disk size (USABLE/TOTAL)", usableDiskSize + "MB/" + totalDiskSize + "MB", false);
+		embedBuilder.addField("RAM (TOTAL/FREE/USED)", totalRam + "MB/" + freeRam + "MB/" + usedRam + "MB", false);
 
 		event.reply(embedBuilder.build()).queue();
 	}
